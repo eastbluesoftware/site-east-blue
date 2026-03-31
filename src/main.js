@@ -49,9 +49,23 @@ if (contactForm) {
     const originalText = btn.textContent;
     btn.textContent = 'Sending...';
     btn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
+    // Call FormSubmit API
+    fetch('https://formsubmit.co/ajax/contact@eastbluesoftware.com', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            name: contactForm.name.value,
+            email: contactForm.email.value,
+            message: contactForm.message.value,
+            _subject: "New contact from East Blue Software website!",
+            _captcha: "false"
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
       btn.textContent = 'Message Sent!';
       contactForm.reset();
       
@@ -59,6 +73,14 @@ if (contactForm) {
         btn.textContent = originalText;
         btn.disabled = false;
       }, 3000);
-    }, 1500);
+    })
+    .catch(error => {
+      console.error(error);
+      btn.textContent = 'Error! Try Again.';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 3000);
+    });
   });
 }
